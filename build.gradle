@@ -1,0 +1,88 @@
+plugins {
+	id 'org.springframework.boot' version '2.2.7.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id 'java'
+	id 'jacoco'
+}
+
+group = 'com.github.olaleyeone'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+configurations {
+	developmentOnly
+	runtimeClasspath {
+		extendsFrom developmentOnly
+	}
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+	maven { url = 'https://jitpack.io' }
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+//	implementation 'org.liquibase:liquibase-core'
+	implementation 'org.springframework.kafka:spring-kafka'
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'org.postgresql:postgresql'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+	testImplementation 'org.springframework.kafka:spring-kafka-test'
+
+	//Custom dependencies
+	implementation fileTree(dir: 'libs', include: ['*.jar'])
+	implementation "javax.inject:javax.inject:1"
+	implementation "org.springdoc:springdoc-openapi-ui:$springdocOpenapiVersion"
+
+	compileOnly "com.querydsl:querydsl-jpa:${queryDslVersion}"
+	annotationProcessor("com.querydsl:querydsl-apt:${queryDslVersion}:jpa")
+	annotationProcessor("org.springframework.boot:spring-boot-starter-data-jpa")
+
+	testImplementation "com.github.heywhy:spring-entity-factory:$springEntityFactoryVersion"
+	testImplementation "com.github.javafaker:javafaker:$javaFakerVersion"
+	testImplementation "com.google.guava:guava:$guavaVersion"
+
+	testCompileOnly "org.projectlombok:lombok:$lombokVersion"
+	testAnnotationProcessor "org.projectlombok:lombok:$lombokVersion"
+}
+
+test {
+	useJUnitPlatform()
+	finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+	reports {
+		xml.enabled true
+		html.enabled true
+	}
+}
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			element = 'CLASS'
+			limit {
+				minimum = 0.95
+			}
+			excludes = [
+					'com.github.olaleyeone.dataupload.configuration.*',
+					'com.github.olaleyeone.dataupload.bootstrap.*',
+					'com.github.olaleyeone.dataupload.advice.*',
+					'com.github.olaleyeone.dataupload.data.entity.Q*'
+			]
+		}
+	}
+}
+check.dependsOn jacocoTestCoverageVerification
