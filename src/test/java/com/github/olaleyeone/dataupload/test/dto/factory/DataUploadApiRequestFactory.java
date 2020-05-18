@@ -15,9 +15,9 @@ public class DataUploadApiRequestFactory implements FactoryHelper<DataUploadApiR
     @Override
     public DataUploadApiRequest apply(Faker faker, ModelFactory factory) {
         DataUploadApiRequest apiRequest = new DataUploadApiRequest();
-        apiRequest.setSize(faker.number().randomNumber());
+//        apiRequest.setSize(faker.number().randomNumber());
 //        apiRequest.setContentType("text/plain");
-        apiRequest.setUserId(faker.idNumber().valid());
+//        apiRequest.setUserId(faker.idNumber().valid());
         return apiRequest;
     }
 }

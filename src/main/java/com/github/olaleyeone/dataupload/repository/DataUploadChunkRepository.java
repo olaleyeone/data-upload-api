@@ -31,4 +31,7 @@ public interface DataUploadChunkRepository extends JpaRepository<DataUploadChunk
 
     @Query("SELECT c FROM DataUploadChunk c WHERE c.dataUpload=?1 ORDER BY c.start")
     List<DataUploadChunk> getAllData(DataUpload dataUpload);
+
+    @Query("SELECT c.id FROM DataUploadChunk c WHERE c.dataUpload=?1 ORDER BY c.start")
+    List<Long> getChunkIds(DataUpload dataUpload);
 }

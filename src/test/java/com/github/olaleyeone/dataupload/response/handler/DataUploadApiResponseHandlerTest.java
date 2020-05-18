@@ -32,6 +32,7 @@ class DataUploadApiResponseHandlerTest extends ComponentTest {
     public void setUp() {
         dataUpload = modelFactory.make(DataUpload.class);
         dataUpload.setId(faker.number().randomNumber());
+        dataUpload.setSize(faker.number().randomNumber());
     }
 
     @Test

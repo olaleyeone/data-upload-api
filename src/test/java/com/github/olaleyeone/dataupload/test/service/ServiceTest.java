@@ -1,5 +1,6 @@
 package com.github.olaleyeone.dataupload.test.service;
 
+import com.github.olaleyeone.dataupload.configuration.AppConfiguration;
 import com.github.olaleyeone.dataupload.test.entity.EntityTest;
 import com.olaleyeone.audittrail.embeddable.Duration;
 import com.olaleyeone.audittrail.entity.Task;
@@ -14,7 +15,7 @@ import org.springframework.context.annotation.Import;
 
 import java.time.LocalDateTime;
 
-@Import({ServiceTestConfiguration.class, TestAuditTrailConfiguration.class})
+@Import({AppConfiguration.class, TestServiceConfiguration.class, TestAuditTrailConfiguration.class})
 public class ServiceTest extends EntityTest {
 
     @Autowired

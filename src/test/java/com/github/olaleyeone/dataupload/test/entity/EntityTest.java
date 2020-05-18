@@ -2,6 +2,7 @@ package com.github.olaleyeone.dataupload.test.entity;
 
 import com.github.heywhy.springentityfactory.contracts.ModelFactory;
 import com.github.javafaker.Faker;
+import com.github.olaleyeone.dataupload.configuration.DataConfiguration;
 import com.github.olaleyeone.dataupload.test.dto.DtoFactory;
 import org.hibernate.engine.spi.EntityEntry;
 import org.hibernate.engine.spi.SessionImplementor;
@@ -20,7 +21,7 @@ import java.util.Random;
 
 @Transactional
 @SpringBootTest(classes = TestApplication.class)
-@Import({DataLayerTestConfiguration.class, EntityFactoryConfiguration.class})
+@Import({DataConfiguration.class, EntityFactoryConfiguration.class})
 public class EntityTest {
 
     @Autowired

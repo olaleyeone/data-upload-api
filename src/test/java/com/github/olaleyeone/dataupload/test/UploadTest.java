@@ -18,8 +18,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
@@ -53,11 +51,7 @@ public class UploadTest extends ServiceTest {
         byte[] initialData = faker.lorem().paragraphs(20).stream()
                 .reduce((a, b) -> a + "\n\n" + b).get().getBytes();
 
-        DataUpload dataUpload = modelFactory.pipe(DataUpload.class)
-                .then(it -> {
-                    it.setSize(Long.valueOf(initialData.length));
-                    return it;
-                }).create();
+        DataUpload dataUpload = modelFactory.create(DataUpload.class);
 
         try (InputStream inputStream = new ByteArrayInputStream(initialData)) {
             byte[] dataRead = new byte[256];
@@ -65,7 +59,8 @@ public class UploadTest extends ServiceTest {
             int read;
             while ((read = inputStream.read(dataRead, 0, dataRead.length)) > 0) {
                 byte[] dataSent = Arrays.copyOfRange(dataRead, 0, read);
-                mockMvc.perform(MockMvcRequestBuilders.post("/uploads/{id}/chunks/{start}", dataUpload.getId(), totalRead.get() + 1)
+                mockMvc.perform(MockMvcRequestBuilders.post("/uploads/{id}/data/{start}", dataUpload.getId(), totalRead.get() + 1)
+                        .param("totalSize", String.valueOf(initialData.length))
                         .contentType("text/plain")
                         .content(dataSent))
                         .andExpect(status().isOk())
@@ -78,16 +73,11 @@ public class UploadTest extends ServiceTest {
             }
         }
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        dataUploadChunkRepository.getAllData(dataUpload).forEach(dataUploadChunk -> {
-            try {
-                bos.write(dataUploadChunk.getData());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-
-        assertArrayEquals(initialData, bos.toByteArray());
+        mockMvc.perform(MockMvcRequestBuilders.get("/uploads/{id}/data", dataUpload.getId()))
+                .andExpect(status().isOk())
+                .andExpect(result -> {
+                    assertArrayEquals(initialData, result.getResponse().getContentAsByteArray());
+                });
     }
 
     @Configuration
@@ -95,7 +85,6 @@ public class UploadTest extends ServiceTest {
             BeanValidationConfiguration.class
     })
     static class $Config implements WebMvcConfigurer {
-
 
     }
 }

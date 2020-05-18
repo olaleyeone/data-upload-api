@@ -16,7 +16,7 @@ public class DataUpload {
     @Column
     private String contentType;
 
-    @Column(nullable = false, updatable = false)
+//    @Column(nullable = false, updatable = false)
     private Long size;
 
     private String description;
@@ -26,6 +26,8 @@ public class DataUpload {
             nullable = false
     )
     private LocalDateTime createdOn;
+
+    private LocalDateTime completionPublishedOn;
 
     @Column(updatable = false)
     private String userId;

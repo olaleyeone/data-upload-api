@@ -20,4 +20,6 @@ public class DataUploadChunkApiRequest {
 
     @NotBlank
     private String contentType;
+
+    private Long totalSize;
 }

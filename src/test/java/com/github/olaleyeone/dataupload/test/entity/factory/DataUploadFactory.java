@@ -15,7 +15,7 @@ public class DataUploadFactory implements FactoryHelper<DataUpload> {
     @Override
     public DataUpload apply(Faker faker, ModelFactory factory) {
         DataUpload dataUpload = new DataUpload();
-        dataUpload.setSize(faker.number().randomNumber());
+//        dataUpload.setSize(faker.number().randomNumber());
 //        dataUpload.setContentType("text/plain");
         dataUpload.setUserId(faker.idNumber().valid());
         return dataUpload;

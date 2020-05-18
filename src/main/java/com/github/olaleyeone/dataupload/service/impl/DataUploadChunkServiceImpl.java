@@ -29,6 +29,9 @@ public class DataUploadChunkServiceImpl implements DataUploadChunkService {
         if (StringUtils.isBlank(dataUpload.getContentType())) {
             dataUpload.setContentType(dto.getContentType());
         }
+        if (dataUpload.getSize() == null) {
+            dataUpload.setSize(dto.getTotalSize());
+        }
         return dataUploadChunk;
     }
 
