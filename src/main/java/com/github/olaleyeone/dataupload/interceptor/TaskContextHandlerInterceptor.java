@@ -1,5 +1,6 @@
 package com.github.olaleyeone.dataupload.interceptor;
 
+import com.github.olaleyeone.auth.data.AuthorizedRequest;
 import com.olaleyeone.audittrail.embeddable.Duration;
 import com.olaleyeone.audittrail.entity.Task;
 import com.olaleyeone.audittrail.entity.WebRequest;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import javax.inject.Provider;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
@@ -45,6 +47,8 @@ public class TaskContextHandlerInterceptor extends HandlerInterceptorAdapter {
 
     private final TaskContextSaver taskContextSaver;
 
+    private final Provider<AuthorizedRequest> authorizedRequestProvider;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Task task = new Task();
@@ -56,6 +60,15 @@ public class TaskContextHandlerInterceptor extends HandlerInterceptorAdapter {
         webRequest.setIpAddress(getActualIpAddress(request));
         webRequest.setUserAgent(request.getHeader(HttpHeaders.USER_AGENT));
         webRequest.setUri(request.getRequestURI());
+        try {
+            AuthorizedRequest authorizedRequest = authorizedRequestProvider.get();
+            if (authorizedRequest.getAccessClaims() != null) {
+                webRequest.setUserId(authorizedRequest.getAccessClaims().getSubject());
+                webRequest.setSessionId(authorizedRequest.getAccessClaims().getId());
+            }
+        } catch (Exception e) {
+
+        }
         task.setWebRequest(webRequest);
 
         taskContextFactory.start(task);
@@ -72,6 +85,7 @@ public class TaskContextHandlerInterceptor extends HandlerInterceptorAdapter {
         Task task = taskContext.getTask();
         WebRequest webRequest = task.getWebRequest();
         webRequest.setStatusCode(response.getStatus());
+
         Duration duration = task.getDuration();
         duration.setNanoSecondsTaken(duration.getStartedOn().until(LocalDateTime.now(), ChronoUnit.NANOS));
         taskContextSaver.save(taskContext);

@@ -5,6 +5,7 @@ import com.github.olaleyeone.dataupload.data.entity.DataUploadChunk;
 import com.github.olaleyeone.dataupload.data.entity.DataUpload;
 import com.github.olaleyeone.dataupload.repository.DataUploadChunkRepository;
 import com.github.olaleyeone.dataupload.service.api.DataUploadChunkService;
+import com.olaleyeone.audittrail.api.Activity;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ public class DataUploadChunkServiceImpl implements DataUploadChunkService {
 
     private final DataUploadChunkRepository dataUploadChunkRepository;
 
+    @Activity("SAVE UPLOAD DATA")
     @Transactional
     @Override
     public DataUploadChunk createChunk(DataUpload dataUpload, DataUploadChunkApiRequest dto) {
@@ -35,6 +37,7 @@ public class DataUploadChunkServiceImpl implements DataUploadChunkService {
         return dataUploadChunk;
     }
 
+    @Activity("DELETE UPLOAD DATA")
     @Transactional
     @Override
     public void delete(DataUploadChunk dataUploadChunk) {
