@@ -16,7 +16,6 @@ public class DataUpload {
     @Column
     private String contentType;
 
-//    @Column(nullable = false, updatable = false)
     private Long size;
 
     private String description;

@@ -3,6 +3,7 @@ package com.github.olaleyeone.dataupload.integration;
 import com.google.gson.Gson;
 import com.olaleyeone.auth.api.SignatureKeyControllerApi;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,25 +11,15 @@ import org.springframework.stereotype.Component;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
+@RequiredArgsConstructor
 @Data
 @Component
 public class SignatureKeyControllerApiFactory implements FactoryBean<SignatureKeyControllerApi> {
 
     @Value("${auth.api.base_url}")
-    private String baseUrl;
+    private final String baseUrl;
 
-    @Inject
-    private Gson gson;
-
-    @PostConstruct
-    public void init() {
-        if (!baseUrl.endsWith("/")) {
-            baseUrl += "/";
-        }
-    }
+    private final Gson gson;
 
     @Override
     public Class<?> getObjectType() {
@@ -43,7 +34,7 @@ public class SignatureKeyControllerApiFactory implements FactoryBean<SignatureKe
     @Override
     public SignatureKeyControllerApi getObject() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
+                .baseUrl(getBaseUrl())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(getOkHttpClient())
                 .validateEagerly(true)
@@ -54,5 +45,12 @@ public class SignatureKeyControllerApiFactory implements FactoryBean<SignatureKe
     private OkHttpClient getOkHttpClient() {
         return new OkHttpClient.Builder()
                 .build();
+    }
+
+    public String getBaseUrl() {
+        if (!baseUrl.endsWith("/")) {
+            return baseUrl + "/";
+        }
+        return baseUrl;
     }
 }

@@ -1,6 +1,7 @@
 package com.github.olaleyeone.dataupload.integration;
 
 import com.github.olaleyeone.dataupload.test.component.ComponentTest;
+import com.google.gson.Gson;
 import com.olaleyeone.auth.api.SignatureKeyControllerApi;
 import com.olaleyeone.auth.model.JsonWebKey;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,25 +12,25 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SignatureKeyControllerApiFactoryTest extends ComponentTest {
 
+    private Gson gson;
+
     private SignatureKeyControllerApiFactory apiFactory;
 
     @BeforeEach
     void setUp() {
-        apiFactory = new SignatureKeyControllerApiFactory();
-        apiFactory.setBaseUrl("http://domain.com/");
+        gson = new Gson();
+        apiFactory = new SignatureKeyControllerApiFactory("http://domain.com/", gson);
     }
 
     @Test
     void testInitWithIncompleteUrl() {
-        apiFactory.setBaseUrl("http://domain.com");
-        apiFactory.init();
+        apiFactory = new SignatureKeyControllerApiFactory("http://domain.com", gson);
         assertEquals("http://domain.com/", apiFactory.getBaseUrl());
     }
 
     @Test
     void testInitWithCompleteUrl() {
-        apiFactory.setBaseUrl("http://domain.com/");
-        apiFactory.init();
+        apiFactory = new SignatureKeyControllerApiFactory("http://domain.com/", gson);
         assertEquals("http://domain.com/", apiFactory.getBaseUrl());
     }
 
@@ -45,9 +46,7 @@ class SignatureKeyControllerApiFactoryTest extends ComponentTest {
 
     @Test
     void getObject() {
-        apiFactory.setBaseUrl("http://domain.com/");
         SignatureKeyControllerApi apiClient = apiFactory.getObject();
-        String body = faker.backToTheFuture().quote();
         Call<JsonWebKey> call = apiClient.getJsonWebKey(faker.idNumber().valid());
         assertEquals("domain.com", call.request().url().host());
         assertFalse(call.request().url().isHttps());

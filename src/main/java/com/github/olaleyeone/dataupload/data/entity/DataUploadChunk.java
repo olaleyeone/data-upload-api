@@ -1,5 +1,6 @@
 package com.github.olaleyeone.dataupload.data.entity;
 
+import com.olaleyeone.audittrail.api.IgnoreData;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
@@ -25,6 +26,7 @@ public class DataUploadChunk {
     @Column(nullable = false, updatable = false)
     private Integer size;
 
+    @IgnoreData
     @Lob
     @Column(nullable = false)
     private byte[] data;

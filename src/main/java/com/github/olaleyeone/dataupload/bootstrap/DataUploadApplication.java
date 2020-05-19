@@ -1,5 +1,6 @@
 package com.github.olaleyeone.dataupload.bootstrap;
 
+import com.github.olaleyeone.auth.configuration.AuthenticationConfiguration;
 import com.github.olaleyeone.dataupload.configuration.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,7 +13,7 @@ import org.springframework.context.annotation.Import;
         AuditTrailConfiguration.class,
         IntegrationConfiguration.class,
         WebConfiguration.class,
-        SecurityConfiguration.class,
+        AuthenticationConfiguration.class,
         OpenApiConfiguration.class
 })
 public class DataUploadApplication {

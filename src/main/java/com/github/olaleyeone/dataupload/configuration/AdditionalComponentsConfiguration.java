@@ -1,7 +1,7 @@
 package com.github.olaleyeone.dataupload.configuration;
 
+import com.github.olaleyeone.auth.data.AuthorizedRequest;
 import com.github.olaleyeone.dataupload.data.dto.RequestMetadata;
-import com.olaleyeone.auth.security.data.AuthorizedRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;

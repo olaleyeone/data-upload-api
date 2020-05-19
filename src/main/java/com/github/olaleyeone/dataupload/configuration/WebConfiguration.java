@@ -1,7 +1,7 @@
 package com.github.olaleyeone.dataupload.configuration;
 
+import com.github.olaleyeone.auth.interceptors.AccessConstraintHandlerInterceptor;
 import com.github.olaleyeone.dataupload.interceptor.TaskContextHandlerInterceptor;
-import com.olaleyeone.auth.security.interceptors.AccessConstraintHandlerInterceptor;
 import org.springdoc.webmvc.api.OpenApiResource;
 import org.springdoc.webmvc.ui.SwaggerWelcome;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class WebConfiguration implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         AutowireCapableBeanFactory beanFactory = applicationContext.getAutowireCapableBeanFactory();
         registry.addInterceptor(beanFactory.createBean(TaskContextHandlerInterceptor.class));
-//        registry.addInterceptor(beanFactory.createBean(RemoteAddressConstraintHandlerInterceptor.class));
+
         AccessConstraintHandlerInterceptor accessConstraintHandlerInterceptor = new AccessConstraintHandlerInterceptor(
                 applicationContext,
                 Arrays.asList(BasicErrorController.class,
