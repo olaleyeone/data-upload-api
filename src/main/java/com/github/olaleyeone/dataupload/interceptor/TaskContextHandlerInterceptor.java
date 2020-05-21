@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class TaskContextHandlerInterceptor extends HandlerInterceptorAdapter {
@@ -52,7 +53,9 @@ public class TaskContextHandlerInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Task task = new Task();
-        task.setName(request.getServletPath());
+        task.setName(Optional.ofNullable(request.getAttribute(org.springframework.web.servlet.HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE))
+                .map(Object::toString)
+                .orElse(request.getServletPath()));
         task.setType(Task.WEB_REQUEST);
         task.setDuration(new Duration(LocalDateTime.now(), null));
 

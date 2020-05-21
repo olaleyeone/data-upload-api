@@ -1,8 +1,9 @@
 package com.github.olaleyeone.dataupload.event.listeners;
 
 import com.github.olaleyeone.dataupload.data.entity.DataUpload;
-import com.github.olaleyeone.dataupload.event.mesage.UploadCompleteEvent;
+import com.github.olaleyeone.dataupload.event.mesage.UploadCompletedEvent;
 import com.github.olaleyeone.dataupload.repository.DataUploadRepository;
+import com.github.olaleyeone.dataupload.response.pojo.DataUploadApiResponse;
 import com.olaleyeone.audittrail.context.TaskContext;
 import com.olaleyeone.audittrail.impl.TaskContextFactory;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class UploadCompleteEventListener {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     private final TransactionTemplate transactionTemplate;
     private final DataUploadRepository dataUploadRepository;
@@ -38,11 +39,11 @@ public class UploadCompleteEventListener {
     @Value("${completed_upload.topic.name}")
     private String completedUploadTopic;
 
-    @EventListener(UploadCompleteEvent.class)
+    @EventListener(UploadCompletedEvent.class)
     @Async
-    public void newUserCreated(UploadCompleteEvent newUserEvent) {
-        logger.info("Event: Upload completed");
-        DataUpload portalUser = newUserEvent.getDataUpload();
+    public void uploadCompletedEvent(UploadCompletedEvent event) {
+        logger.info("Event: Upload of {} completed", event.getDataUpload().getId());
+        DataUpload portalUser = event.getDataUpload();
         taskContextFactory.startBackgroundTask(
                 "PUBLISH COMPLETED UPLOAD",
                 String.format("Publish completed upload %d", portalUser.getId()),
@@ -50,7 +51,7 @@ public class UploadCompleteEventListener {
     }
 
     private void sendUser(DataUpload dataUpload) {
-        sendMessage(dataUpload).addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
+        sendMessage(dataUpload).addCallback(new ListenableFutureCallback<SendResult<String, Object>>() {
 
             @Override
             public void onFailure(Throwable ex) {
@@ -59,8 +60,8 @@ public class UploadCompleteEventListener {
             }
 
             @Override
-            public void onSuccess(SendResult<String, String> result) {
-                logger.info("Upload published");
+            public void onSuccess(SendResult<String, Object> result) {
+                logger.info("Upload of {} published", dataUpload.getId());
                 taskContextProvider.get().execute(
                         "UPDATE PUBLISHED UPLOAD",
                         String.format("Update published upload %d", dataUpload.getId()),
@@ -73,7 +74,7 @@ public class UploadCompleteEventListener {
         });
     }
 
-    public ListenableFuture<SendResult<String, String>> sendMessage(DataUpload msg) {
-        return kafkaTemplate.send(completedUploadTopic, msg.getId().toString());
+    public ListenableFuture<SendResult<String, Object>> sendMessage(DataUpload msg) {
+        return kafkaTemplate.send(completedUploadTopic, msg.getId().toString(), new DataUploadApiResponse(msg));
     }
 }

@@ -3,7 +3,7 @@ package com.github.olaleyeone.dataupload.controller;
 import com.github.olaleyeone.dataupload.data.dto.DataUploadChunkApiRequest;
 import com.github.olaleyeone.dataupload.data.entity.DataUpload;
 import com.github.olaleyeone.dataupload.data.entity.DataUploadChunk;
-import com.github.olaleyeone.dataupload.event.mesage.UploadCompleteEvent;
+import com.github.olaleyeone.dataupload.event.mesage.UploadCompletedEvent;
 import com.github.olaleyeone.dataupload.repository.DataUploadChunkRepository;
 import com.github.olaleyeone.dataupload.repository.DataUploadRepository;
 import com.github.olaleyeone.dataupload.response.handler.DataUploadApiResponseHandler;
@@ -63,7 +63,7 @@ public class DataUploadChunkController {
         }
         DataUploadApiResponse dataUploadApiResponse = dataUploadApiResponseHandler.getDataUploadApiResponse(dataUpload);
         if (dataUpload.getSize().equals(dataUploadApiResponse.getSizeUploaded())) {
-            applicationContext.publishEvent(new UploadCompleteEvent(dataUpload));
+            applicationContext.publishEvent(new UploadCompletedEvent(dataUpload));
         }
         return dataUploadApiResponse;
     }

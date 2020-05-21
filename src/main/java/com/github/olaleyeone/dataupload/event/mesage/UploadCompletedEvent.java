@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Data
-public class UploadCompleteEvent {
+public class UploadCompletedEvent {
 
     private final DataUpload dataUpload;
 }
