@@ -2,7 +2,6 @@ package com.github.olaleyeone.dataupload.integration;
 
 import com.google.gson.Gson;
 import com.olaleyeone.auth.api.SignatureKeyControllerApi;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.FactoryBean;
@@ -12,7 +11,6 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 @RequiredArgsConstructor
-@Data
 @Component
 public class SignatureKeyControllerApiFactory implements FactoryBean<SignatureKeyControllerApi> {
 

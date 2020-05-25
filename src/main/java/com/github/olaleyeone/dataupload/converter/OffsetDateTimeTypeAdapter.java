@@ -25,7 +25,7 @@ public class OffsetDateTimeTypeAdapter extends TypeAdapter<OffsetDateTime> {
 
     @Override
     public void write(JsonWriter out, OffsetDateTime value) throws IOException {
-        out.value(value.toString());
+        out.value(value.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
     }
 
     @Override

@@ -9,6 +9,7 @@ import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class LocalDateTimeTypeAdapter extends TypeAdapter<LocalDateTime> {
 
@@ -24,11 +25,11 @@ public class LocalDateTimeTypeAdapter extends TypeAdapter<LocalDateTime> {
 
     @Override
     public void write(JsonWriter out, LocalDateTime value) throws IOException {
-        out.value(value.toString());
+        out.value(value.format(DateTimeFormatter.ISO_DATE_TIME));
     }
 
     @Override
     public LocalDateTime read(JsonReader in) throws IOException {
-        return LocalDateTime.parse(in.nextString());
+        return LocalDateTime.parse(in.nextString(), DateTimeFormatter.ISO_DATE_TIME);
     }
 }
