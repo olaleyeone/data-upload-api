@@ -6,7 +6,9 @@ import com.github.olaleyeone.dataupload.repository.DataUploadRepository;
 import com.github.olaleyeone.dataupload.response.pojo.DataUploadApiResponse;
 import com.olaleyeone.audittrail.context.TaskContext;
 import com.olaleyeone.audittrail.impl.TaskContextFactory;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,20 +39,22 @@ public class UploadCompleteEventListener {
     private final TaskContextFactory taskContextFactory;
 
     @Value("${completed_upload.topic.name}")
+    @Getter
+    @Setter
     private String completedUploadTopic;
 
     @EventListener(UploadCompletedEvent.class)
     @Async
     public void uploadCompletedEvent(UploadCompletedEvent event) {
         logger.info("Event: Upload of {} completed", event.getDataUpload().getId());
-        DataUpload portalUser = event.getDataUpload();
+        DataUpload dataUpload = event.getDataUpload();
         taskContextFactory.startBackgroundTask(
                 "PUBLISH COMPLETED UPLOAD",
-                String.format("Publish completed upload %d", portalUser.getId()),
-                () -> sendUser(portalUser));
+                String.format("Publish completed upload %d", dataUpload.getId()),
+                () -> send(dataUpload));
     }
 
-    private void sendUser(DataUpload dataUpload) {
+    private void send(DataUpload dataUpload) {
         sendMessage(dataUpload).addCallback(new ListenableFutureCallback<SendResult<String, Object>>() {
 
             @Override

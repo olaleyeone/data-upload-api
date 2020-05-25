@@ -40,6 +40,7 @@ class DataUploadApiResponseHandlerTest extends ComponentTest {
         Mockito.doReturn(0L).when(dataUploadChunkRepository).sumData(Mockito.any());
         DataUploadApiResponse dataUploadApiResponse = dataUploadApiResponseHandler.getDataUploadApiResponse(dataUpload);
         assertNotNull(dataUploadApiResponse);
+        assertEquals(dataUpload.getSize(), dataUploadApiResponse.getSize());
         assertNotNull(dataUploadApiResponse.getMissingChunks());
         assertEquals(1, dataUploadApiResponse.getMissingChunks().size());
         MissingChunkApiResponse missingChunkApiResponse = dataUploadApiResponse.getMissingChunks().iterator().next();

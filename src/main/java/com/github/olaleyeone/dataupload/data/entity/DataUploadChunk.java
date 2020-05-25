@@ -28,7 +28,6 @@ public class DataUploadChunk {
 
     @IgnoreData
     @Lob
-    @Column(nullable = false)
     private byte[] data;
 
     @Column(

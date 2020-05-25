@@ -6,9 +6,15 @@ import com.github.olaleyeone.dataupload.data.entity.DataUploadChunk;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 public interface DataUploadChunkRepository extends JpaRepository<DataUploadChunk, Long> {
+
+    @Transactional
+    @Override
+    Optional<DataUploadChunk> findById(Long aLong);
 
     @Query("SELECT COUNT(c) FROM DataUploadChunk c WHERE c.dataUpload=?1 AND NOT (?2>=(c.start+c.size) OR (?2+?3)<=c.start)")
     int countByRange(DataUpload dataUpload, Long start, Integer size);
@@ -28,9 +34,6 @@ public interface DataUploadChunkRepository extends JpaRepository<DataUploadChunk
             " AND (c.start+c.size)=after.start" +
             ") ORDER BY c.start")
     List<DataChunk> getOpenChunks(DataUpload dataUpload);
-
-    @Query("SELECT c FROM DataUploadChunk c WHERE c.dataUpload=?1 ORDER BY c.start")
-    List<DataUploadChunk> getAllData(DataUpload dataUpload);
 
     @Query("SELECT c.id FROM DataUploadChunk c WHERE c.dataUpload=?1 ORDER BY c.start")
     List<Long> getChunkIds(DataUpload dataUpload);

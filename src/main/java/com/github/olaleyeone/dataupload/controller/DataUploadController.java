@@ -1,7 +1,9 @@
 package com.github.olaleyeone.dataupload.controller;
 
+import com.github.olaleyeone.auth.annotations.Public;
 import com.github.olaleyeone.dataupload.data.dto.DataUploadApiRequest;
 import com.github.olaleyeone.dataupload.data.entity.DataUpload;
+import com.github.olaleyeone.dataupload.data.entity.DataUploadChunk;
 import com.github.olaleyeone.dataupload.repository.DataUploadChunkRepository;
 import com.github.olaleyeone.dataupload.repository.DataUploadRepository;
 import com.github.olaleyeone.dataupload.response.handler.DataUploadApiResponseHandler;
@@ -41,6 +43,7 @@ public class DataUploadController {
         return dataUploadApiResponseHandler.getDataUploadApiResponse(dataUpload);
     }
 
+    @Public
     @GetMapping("/uploads/{id:\\d+}/data")
     public void getData(
             @PathVariable("id") Long dataUploadId,
@@ -57,14 +60,14 @@ public class DataUploadController {
         httpServletResponse.setContentType(dataUpload.getContentType());
         List<Long> chunkIds = dataUploadChunkRepository.getChunkIds(dataUpload);
         for (Long id : chunkIds) {
-            dataUploadChunkRepository.findById(id).ifPresent(dataUploadChunk -> {
-                try {
-                    httpServletResponse.getOutputStream().write(dataUploadChunk.getData());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    throw new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR);
-                }
-            });
+            DataUploadChunk dataUploadChunk = dataUploadChunkRepository.findById(id)
+                    .orElseThrow(() -> new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR));
+            try {
+                httpServletResponse.getOutputStream().write(dataUploadChunk.getData());
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
     }
 }

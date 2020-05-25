@@ -19,7 +19,7 @@ public class DataUploadApiResponseHandler {
     private final DataUploadChunkRepository dataUploadChunkRepository;
 
     public DataUploadApiResponse getDataUploadApiResponse(DataUpload dataUpload) {
-        DataUploadApiResponse apiResponse = new DataUploadApiResponse();
+        DataUploadApiResponse apiResponse = new DataUploadApiResponse(dataUpload);
         apiResponse.setSizeUploaded(dataUploadChunkRepository.sumData(dataUpload));
         if (apiResponse.getSizeUploaded() == 0) {
             apiResponse.setMissingChunks(Collections.singletonList(MissingChunkApiResponse.builder()

@@ -1,5 +1,7 @@
 package com.github.olaleyeone.dataupload.interceptor;
 
+import com.github.olaleyeone.auth.data.AccessClaims;
+import com.github.olaleyeone.auth.data.AuthorizedRequest;
 import com.github.olaleyeone.dataupload.test.component.ComponentTest;
 import com.olaleyeone.audittrail.embeddable.Duration;
 import com.olaleyeone.audittrail.entity.Task;
@@ -8,12 +10,14 @@ import com.olaleyeone.audittrail.impl.TaskContextFactory;
 import com.olaleyeone.audittrail.impl.TaskContextHolder;
 import com.olaleyeone.audittrail.impl.TaskContextImpl;
 import com.olaleyeone.audittrail.impl.TaskContextSaver;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.http.HttpHeaders;
 
+import javax.inject.Provider;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
@@ -37,11 +41,21 @@ class TaskContextHandlerInterceptorTest extends ComponentTest {
     @Mock
     private TaskContextSaver taskContextSaver;
 
+    @Mock
+    private AuthorizedRequest authorizedRequest;
+
+    @Mock
+    private AccessClaims accessClaims;
+
+    @Mock
+    private Provider<AuthorizedRequest> authorizedRequestProvider;
+
     @InjectMocks
     private TaskContextHandlerInterceptor taskContextHandlerInterceptor;
 
     @Test
     void preHandle() {
+        Mockito.doReturn(authorizedRequest).when(authorizedRequestProvider).get();
         String path = faker.internet().slug();
         Mockito.doReturn(path).when(request).getServletPath();
         Mockito.doReturn(path).when(request).getRequestURI();
@@ -62,6 +76,28 @@ class TaskContextHandlerInterceptorTest extends ComponentTest {
                     assertEquals(path, webRequest.getUri());
                     assertEquals(ipV4Address, webRequest.getIpAddress());
                     assertEquals(userAgent, webRequest.getUserAgent());
+                    return true;
+                }));
+    }
+
+    @Test
+    void preHandleAuthorizedRequest() {
+        Mockito.doReturn(authorizedRequest).when(authorizedRequestProvider).get();
+        Mockito.doReturn(accessClaims).when(authorizedRequest).getAccessClaims();
+        Mockito.doReturn(faker.number().digit()).when(accessClaims).getSubject();
+        Mockito.doReturn(faker.number().digit()).when(accessClaims).getId();
+
+        Mockito.doReturn(faker.internet().ipV4Address()).when(request).getRemoteAddr();
+
+        taskContextHandlerInterceptor.preHandle(request, response, null);
+        Mockito.verify(taskContextFactory, Mockito.times(1))
+                .start(Mockito.argThat(task -> {
+                    assertNotNull(task);
+
+                    assertNotNull(task.getWebRequest());
+                    WebRequest webRequest = task.getWebRequest();
+                    assertEquals(accessClaims.getId(), webRequest.getSessionId());
+                    assertEquals(accessClaims.getSubject(), webRequest.getUserId());
                     return true;
                 }));
     }

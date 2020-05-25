@@ -22,10 +22,13 @@ public class DataUploadApiResponse {
 
     private List<MissingChunkApiResponse> missingChunks;
 
+    private String userId;
+
     public DataUploadApiResponse(DataUpload dataUpload) {
         this.id = dataUpload.getId();
         this.contentType = dataUpload.getContentType();
         this.size = dataUpload.getSize();
         this.description = dataUpload.getDescription();
+        this.userId = dataUpload.getUserId();
     }
 }

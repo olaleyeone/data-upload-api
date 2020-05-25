@@ -17,6 +17,7 @@ public class DataUploadChunkApiRequestFactory implements FactoryHelper<DataUploa
         DataUploadChunkApiRequest apiRequest = new DataUploadChunkApiRequest();
         apiRequest.setStart(1L);
         apiRequest.setData(faker.backToTheFuture().quote().getBytes());
+        apiRequest.setTotalSize(Long.valueOf(apiRequest.getData().length));
         return apiRequest;
     }
 }

@@ -36,6 +36,14 @@ class DataUploadChunkServiceImplTest extends ServiceTest {
     }
 
     @Test
+    void createChunkWithoutTotalSize() {
+        DataUploadChunkApiRequest apiRequest = dtoFactory.make(DataUploadChunkApiRequest.class);
+        apiRequest.setTotalSize(null);
+        dataUpload.setSize(null);
+        assertThrows(IllegalArgumentException.class, ()->dataUploadChunkService.createChunk(dataUpload, apiRequest));
+    }
+
+    @Test
     void deleteRecord() {
         DataUploadChunk dataUploadChunk = modelFactory.create(DataUploadChunk.class);
         dataUploadChunkService.delete(dataUploadChunk);

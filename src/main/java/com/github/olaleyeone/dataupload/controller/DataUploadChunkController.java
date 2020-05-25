@@ -46,14 +46,17 @@ public class DataUploadChunkController {
         DataUpload dataUpload = getDataUpload(dataUploadId, request);
         DataUploadChunkApiRequest apiRequest = getDataUploadChunkApiRequest(start, request, dataUpload);
 
-        if (dataUpload.getSize() == null) {
+        Long totalUploadSize = dataUpload.getSize();
+        if (totalUploadSize == null) {
             if (totalSize == null || totalSize < 1) {
                 throw new ErrorResponse(HttpStatus.BAD_REQUEST, "Valid total size required");
             }
-            apiRequest.setTotalSize(totalSize);
-        } else if (dataUpload.getSize() < (apiRequest.getStart() + apiRequest.getData().length) - 1) {
+            apiRequest.setTotalSize(totalUploadSize = totalSize);
+        }
+
+        if (totalUploadSize == null || totalUploadSize < (apiRequest.getStart() + apiRequest.getData().length) - 1) {
             throw new ErrorResponse(HttpStatus.BAD_REQUEST, String.format("Cannot write beyond expected upload size %d",
-                    dataUpload.getSize()));
+                    totalUploadSize));
         }
 
         DataUploadChunk chunk = dataUploadChunkService.createChunk(dataUpload, apiRequest);
