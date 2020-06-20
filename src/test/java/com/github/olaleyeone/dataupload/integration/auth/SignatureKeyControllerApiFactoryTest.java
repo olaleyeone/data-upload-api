@@ -1,5 +1,6 @@
-package com.github.olaleyeone.dataupload.integration;
+package com.github.olaleyeone.dataupload.integration.auth;
 
+import com.github.olaleyeone.dataupload.integration.auth.SignatureKeyControllerApiFactory;
 import com.github.olaleyeone.dataupload.test.component.ComponentTest;
 import com.google.gson.Gson;
 import com.olaleyeone.auth.api.SignatureKeyControllerApi;

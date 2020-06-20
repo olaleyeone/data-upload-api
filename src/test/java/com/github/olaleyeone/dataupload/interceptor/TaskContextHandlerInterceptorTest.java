@@ -3,6 +3,7 @@ package com.github.olaleyeone.dataupload.interceptor;
 import com.github.olaleyeone.auth.data.AccessClaims;
 import com.github.olaleyeone.auth.data.AuthorizedRequest;
 import com.github.olaleyeone.dataupload.test.component.ComponentTest;
+import com.github.olaleyeone.interceptor.TaskContextHandlerInterceptor;
 import com.olaleyeone.audittrail.embeddable.Duration;
 import com.olaleyeone.audittrail.entity.Task;
 import com.olaleyeone.audittrail.entity.WebRequest;
@@ -10,7 +11,6 @@ import com.olaleyeone.audittrail.impl.TaskContextFactory;
 import com.olaleyeone.audittrail.impl.TaskContextHolder;
 import com.olaleyeone.audittrail.impl.TaskContextImpl;
 import com.olaleyeone.audittrail.impl.TaskContextSaver;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -22,7 +22,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class TaskContextHandlerInterceptorTest extends ComponentTest {
 

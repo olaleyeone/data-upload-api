@@ -1,8 +1,8 @@
 package com.github.olaleyeone.dataupload.configuration;
 
-import com.github.olaleyeone.dataupload.converter.LocalDateTimeTypeAdapter;
-import com.github.olaleyeone.dataupload.converter.LocalDateTypeAdapter;
-import com.github.olaleyeone.dataupload.converter.OffsetDateTimeTypeAdapter;
+import com.github.olaleyeone.converter.LocalDateTimeTypeAdapter;
+import com.github.olaleyeone.converter.LocalDateTypeAdapter;
+import com.github.olaleyeone.converter.OffsetDateTimeTypeAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.springframework.context.annotation.Bean;
@@ -11,9 +11,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableAsync;
 
+import static com.github.olaleyeone.configuration.JacksonConfiguration.DEFAULT_DATE_TIME_FORMAT;
+
 @Configuration
 @ComponentScan({
-        "com.github.olaleyeone.dataupload.integration"
+        "com.github.olaleyeone.dataupload.integration",
+        "com.github.olaleyeone.dataupload.messaging"
 })
 @Import({
         KafkaTopicConfig.class,
@@ -21,8 +24,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 })
 @EnableAsync
 public class IntegrationConfiguration {
-
-    public static final String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     @Bean
     public Gson gson() {

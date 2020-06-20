@@ -12,6 +12,7 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
+import static com.github.olaleyeone.configuration.JacksonConfiguration.DEFAULT_DATE_TIME_FORMAT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -76,6 +77,6 @@ class IntegrationConfigurationTest extends ComponentTest {
     void writeDate() {
         Date now = new Date();
         String format = gson.toJson(now);
-        assertEquals(String.format("\"%s\"", DateFormatUtils.format(now, IntegrationConfiguration.DEFAULT_DATE_TIME_FORMAT)), format);
+        assertEquals(String.format("\"%s\"", DateFormatUtils.format(now, DEFAULT_DATE_TIME_FORMAT)), format);
     }
 }

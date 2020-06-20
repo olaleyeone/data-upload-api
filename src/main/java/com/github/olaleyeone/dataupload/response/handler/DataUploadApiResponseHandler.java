@@ -30,6 +30,7 @@ public class DataUploadApiResponseHandler {
             apiResponse.setMissingChunks(getMissingChunks(dataUpload));
         } else {
             apiResponse.setMissingChunks(Collections.EMPTY_LIST);
+            apiResponse.setCompletedOn(dataUploadChunkRepository.findLatestUploadTime(dataUpload));
         }
 
         return apiResponse;

@@ -1,4 +1,4 @@
-package com.github.olaleyeone.dataupload.event.mesage;
+package com.github.olaleyeone.dataupload.messaging.event;
 
 import com.github.olaleyeone.dataupload.data.entity.DataUpload;
 import lombok.Data;

@@ -1,5 +1,6 @@
 package com.github.olaleyeone.dataupload.test.controller;
 
+import com.github.olaleyeone.advice.ErrorAdvice;
 import com.github.olaleyeone.dataupload.repository.DataUploadChunkRepository;
 import com.github.olaleyeone.dataupload.repository.DataUploadRepository;
 import com.github.olaleyeone.dataupload.response.handler.DataUploadApiResponseHandler;
@@ -12,10 +13,14 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ComponentScan({
-        "com.github.olaleyeone.dataupload.controller",
-        "com.github.olaleyeone.dataupload.advice",
+        "com.github.olaleyeone.dataupload.controller"
 })
 public class ControllerTestConfiguration {
+
+    @Bean
+    public ErrorAdvice errorAdvice() {
+        return new ErrorAdvice();
+    }
 
     @Bean
     public DataUploadService dataUploadService() {
