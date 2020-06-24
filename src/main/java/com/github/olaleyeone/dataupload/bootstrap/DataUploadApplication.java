@@ -5,6 +5,7 @@ import com.github.olaleyeone.dataupload.configuration.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @Import({
@@ -12,9 +13,9 @@ import org.springframework.context.annotation.Import;
         AuditTrailConfiguration.class,
         IntegrationConfiguration.class,
         WebConfiguration.class,
-        AuthenticationConfiguration.class,
-        OpenApiConfiguration.class
+        AuthenticationConfiguration.class
 })
+@EnableAsync
 public class DataUploadApplication {
 
     public static void main(String[] args) {

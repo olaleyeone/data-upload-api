@@ -55,27 +55,31 @@ public class CompletedUploadPublisherJob {
                 () -> {
                     try {
                         lock.lock();
-                        List<DataUpload> failures = new ArrayList<>();
-                        List<DataUpload> dataUploads = getNext(failures.size());
-                        while (!dataUploads.isEmpty()) {
-                            dataUploads.forEach(dataUpload -> {
-                                try {
-                                    messageProducer.send(dataUpload).get();
-                                } catch (Exception e) {
-                                    logger.error(e.getMessage(), e);
-                                    failures.add(dataUpload);
-                                }
-                            });
-                            if (startTime != lastTrigger.get()) {
-                                break;
-                            }
-                            dataUploads = getNext(failures.size());
-                        }
+                        processQueue(startTime);
                     } finally {
                         lock.unlock();
                     }
                     logger.info("session ended");
                 });
+    }
+
+    private void processQueue(LocalDateTime startTime) {
+        List<DataUpload> failures = new ArrayList<>();
+        List<DataUpload> dataUploads;
+        do {
+            dataUploads = getNext(failures.size());
+            dataUploads.forEach(dataUpload -> {
+                try {
+                    messageProducer.send(dataUpload).get();
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    failures.add(dataUpload);
+                }
+            });
+            if (startTime != lastTrigger.get()) {
+                break;
+            }
+        } while (!dataUploads.isEmpty());
     }
 
     private List<DataUpload> getNext(int offset) {

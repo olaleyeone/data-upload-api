@@ -27,8 +27,7 @@ public class DataUploadChunk {
     private Integer size;
 
     @IgnoreData
-//    @Column(length = 64 * 1024)
-    @Lob
+    @Column(length = 64 * 1024 * 1024)
     private byte[] data;
 
     @Column(

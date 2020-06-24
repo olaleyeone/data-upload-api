@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.scheduling.annotation.EnableAsync;
 
 import static com.github.olaleyeone.configuration.JacksonConfiguration.DEFAULT_DATE_TIME_FORMAT;
 
@@ -22,7 +21,6 @@ import static com.github.olaleyeone.configuration.JacksonConfiguration.DEFAULT_D
         KafkaTopicConfig.class,
         KafkaProducerConfig.class
 })
-@EnableAsync
 public class IntegrationConfiguration {
 
     @Bean

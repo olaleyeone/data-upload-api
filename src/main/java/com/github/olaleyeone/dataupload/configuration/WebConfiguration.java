@@ -28,6 +28,7 @@ import java.util.Arrays;
         "com.github.olaleyeone.dataupload.response.handler"
 })
 @Import({
+        RequestMetadataConfiguration.class,
         PredicateConfiguration.class,
         BeanValidationConfiguration.class,
         JacksonConfiguration.class,

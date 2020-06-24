@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -39,10 +40,10 @@ class CompletedUploadPublisherTest extends ComponentTest {
     @Mock
     private TaskContextFactory taskContextFactory;
 
-    private DataUpload dataUpload;
-
     @InjectMocks
     private CompletedUploadPublisher completedUploadPublisher;
+
+    private DataUpload dataUpload;
 
     @BeforeEach
     public void setUp() {
@@ -52,21 +53,19 @@ class CompletedUploadPublisherTest extends ComponentTest {
 
     @Test
     void uploadCompletedEvent() {
-        Mockito.doAnswer(invocation -> {
+        Answer answer = invocation -> {
             invocation.getArgument(2, Action.class).execute();
             return null;
-        }).when(taskContextFactory).startBackgroundTask(Mockito.any(), Mockito.any(), Mockito.any());
+        };
+        Mockito.doAnswer(answer).when(taskContextFactory).startBackgroundTask(Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.doAnswer(answer).when(taskContext).execute(Mockito.any(), Mockito.any(), Mockito.any());
         Mockito.doReturn(taskContext).when(taskContextProvider).get();
-        Mockito.doAnswer(invocation -> {
-            invocation.getArgument(2, Action.class).execute();
-            return null;
-        }).when(taskContext).execute(Mockito.any(), Mockito.any(), Mockito.any());
         Mockito.doAnswer(invocation -> invocation.getArgument(0, TransactionCallback.class).doInTransaction(null))
                 .when(transactionTemplate).execute(Mockito.any());
-
         Mockito.doReturn(new AsyncResult<>(Mockito.mock(SendResult.class)))
                 .when(kafkaTemplate)
                 .send(Mockito.any(), Mockito.any(), Mockito.any());
+
         completedUploadPublisher.uploadCompletedEvent(new UploadCompletedEvent(dataUpload));
         assertNotNull(dataUpload.getCompletionPublishedOn());
         Mockito.verify(dataUploadRepository, Mockito.times(1))

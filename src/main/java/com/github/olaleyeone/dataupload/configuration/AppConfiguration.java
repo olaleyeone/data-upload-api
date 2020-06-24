@@ -6,8 +6,6 @@ import org.springframework.context.annotation.Import;
 
 @Configuration
 @Import({DataConfiguration.class})
-@ComponentScan({
-        "com.github.olaleyeone.dataupload.service"
-})
+@ComponentScan({"com.github.olaleyeone.dataupload.service"})
 public class AppConfiguration {
 }
