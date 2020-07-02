@@ -22,7 +22,7 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import javax.inject.Provider;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
@@ -77,7 +77,7 @@ public class CompletedUploadPublisher {
                                     "UPDATE PUBLISHED UPLOAD",
                                     String.format("Update published upload %d", dataUpload.getId()),
                                     () -> transactionTemplate.execute(status -> {
-                                        dataUpload.setCompletionPublishedOn(LocalDateTime.now());
+                                        dataUpload.setCompletionPublishedOn(OffsetDateTime.now());
                                         return dataUploadRepository.save(dataUpload);
                                     })));
                 } finally {

@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Data
 @Entity
@@ -34,12 +34,12 @@ public class DataUploadChunk {
             updatable = false,
             nullable = false
     )
-    private LocalDateTime createdOn;
+    private OffsetDateTime createdOn;
 
     @PrePersist
     public void prePersist() {
         if (this.createdOn == null) {
-            this.createdOn = LocalDateTime.now();
+            this.createdOn = OffsetDateTime.now();
         }
         this.size = data.length;
     }

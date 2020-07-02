@@ -14,7 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -54,7 +54,7 @@ class CompletedUploadPublisherJobTest extends EntityTest {
         DataUploadChunk dataUploadChunk = modelFactory.pipe(DataUploadChunk.class)
                 .then(it -> {
                     it.setData(new byte[size]);
-                    it.setCreatedOn(LocalDateTime.now().minusMinutes(1));
+                    it.setCreatedOn(OffsetDateTime.now().minusMinutes(1));
                     DataUpload dataUpload = it.getDataUpload();
                     dataUpload.setSize(Long.valueOf(size));
                     dataUpload.setCompletionPublishedOn(null);
@@ -64,7 +64,7 @@ class CompletedUploadPublisherJobTest extends EntityTest {
         DataUpload dataUpload = dataUploadChunk.getDataUpload();
 
         Mockito.doAnswer(invocation -> {
-            dataUpload.setCompletionPublishedOn(LocalDateTime.now());
+            dataUpload.setCompletionPublishedOn(OffsetDateTime.now());
             dataUploadRepository.save(dataUpload);
             return CompletableFuture.completedFuture(null);
         }).when(messageProducer).send(Mockito.any());
@@ -78,7 +78,7 @@ class CompletedUploadPublisherJobTest extends EntityTest {
         DataUploadChunk dataUploadChunk = modelFactory.pipe(DataUploadChunk.class)
                 .then(it -> {
                     it.setData(new byte[size / 2]);
-                    it.setCreatedOn(LocalDateTime.now().minusMinutes(1));
+                    it.setCreatedOn(OffsetDateTime.now().minusMinutes(1));
                     DataUpload dataUpload = it.getDataUpload();
                     dataUpload.setSize(Long.valueOf(size));
                     dataUpload.setCompletionPublishedOn(null);
@@ -97,7 +97,7 @@ class CompletedUploadPublisherJobTest extends EntityTest {
         modelFactory.pipe(DataUploadChunk.class)
                 .then(it -> {
                     it.setData(new byte[size]);
-                    it.setCreatedOn(LocalDateTime.now().minusMinutes(1));
+                    it.setCreatedOn(OffsetDateTime.now().minusMinutes(1));
                     DataUpload dataUpload = it.getDataUpload();
                     dataUpload.setSize(Long.valueOf(size));
                     dataUpload.setCompletionPublishedOn(null);

@@ -19,6 +19,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -94,7 +95,7 @@ public class CompletedUploadPublisherJob {
                         QDataUploadChunk.dataUploadChunk.createdOn.max())
                 .groupBy(QDataUpload.dataUpload.id, QDataUpload.dataUpload.size)
                 .having(QDataUpload.dataUpload.size.eq(QDataUploadChunk.dataUploadChunk.size.sum().longValue()))
-                .having(QDataUploadChunk.dataUploadChunk.createdOn.max().before(LocalDateTime.now()
+                .having(QDataUploadChunk.dataUploadChunk.createdOn.max().before(OffsetDateTime.now()
                         .minus(5, ChronoUnit.SECONDS)))
                 .orderBy(QDataUploadChunk.dataUploadChunk.createdOn.max().asc())
                 .offset(offset)

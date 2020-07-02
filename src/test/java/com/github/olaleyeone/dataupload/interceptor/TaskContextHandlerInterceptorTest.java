@@ -20,7 +20,7 @@ import org.springframework.http.HttpHeaders;
 import javax.inject.Provider;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -125,7 +125,7 @@ class TaskContextHandlerInterceptorTest extends ComponentTest {
     @Test
     void afterCompletion() {
         Task task = new Task();
-        task.setDuration(Duration.builder().startedOn(LocalDateTime.now()).build());
+        task.setDuration(Duration.builder().startedOn(OffsetDateTime.now()).build());
         task.setWebRequest(new WebRequest());
         TaskContextImpl taskContext = new TaskContextImpl(task, null, taskContextHolder, null);
         Mockito.doReturn(taskContext).when(taskContextHolder).getObject();

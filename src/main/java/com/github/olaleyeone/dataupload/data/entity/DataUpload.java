@@ -3,7 +3,7 @@ package com.github.olaleyeone.dataupload.data.entity;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Data
 @Entity
@@ -24,9 +24,9 @@ public class DataUpload {
             updatable = false,
             nullable = false
     )
-    private LocalDateTime createdOn;
+    private OffsetDateTime createdOn;
 
-    private LocalDateTime completionPublishedOn;
+    private OffsetDateTime completionPublishedOn;
 
     @Column(updatable = false)
     private String userId;
@@ -34,7 +34,7 @@ public class DataUpload {
     @PrePersist
     public void prePersist() {
         if (this.createdOn == null) {
-            this.createdOn = LocalDateTime.now();
+            this.createdOn = OffsetDateTime.now();
         }
     }
 }
