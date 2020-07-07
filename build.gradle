@@ -3,12 +3,20 @@ plugins {
 	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
 	id 'java'
 	id 'jacoco'
-	id 'war'
+//	id 'war'
+	id "com.github.olaleyeone.docker-app" version "0.0.1"
 }
 
 group = 'com.github.olaleyeone'
 version = '1.0'
 sourceCompatibility = '1.8'
+
+dockerApp {
+	mainClassName = 'com.github.olaleyeone.dataupload.bootstrap.DataUploadApplication'
+	docker {
+		repository "olaleye"
+	}
+}
 
 configurations {
 	developmentOnly
@@ -36,7 +44,7 @@ dependencies {
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
-	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+//	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
@@ -47,7 +55,8 @@ dependencies {
 	implementation "javax.inject:javax.inject:1"
 	implementation "org.springdoc:springdoc-openapi-ui:$springdocOpenapiVersion"
 
-	compileOnly "com.querydsl:querydsl-jpa:${queryDslVersion}"
+	implementation "com.querydsl:querydsl-core:${queryDslVersion}"
+	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
 	annotationProcessor("com.querydsl:querydsl-apt:${queryDslVersion}:jpa")
 	annotationProcessor("org.springframework.boot:spring-boot-starter-data-jpa")
 
@@ -88,7 +97,6 @@ jacocoTestCoverageVerification {
 			excludes = [
 					'com.github.olaleyeone.dataupload.configuration.*',
 					'com.github.olaleyeone.dataupload.bootstrap.*',
-					'com.github.olaleyeone.dataupload.advice.*',
 					'com.github.olaleyeone.dataupload.data.entity.Q*'
 			]
 		}

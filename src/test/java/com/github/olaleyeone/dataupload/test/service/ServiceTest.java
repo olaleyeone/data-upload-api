@@ -13,7 +13,7 @@ import org.mockito.internal.creation.bytebuddy.MockAccess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Import({AppConfiguration.class, TestServiceConfiguration.class, TestAuditTrailConfiguration.class})
 public class ServiceTest extends EntityTest {
@@ -30,7 +30,7 @@ public class ServiceTest extends EntityTest {
                 .values().forEach(Mockito::reset);
 
         Task task = new Task();
-        task.setDuration(new Duration(LocalDateTime.now(), null));
+        task.setDuration(new Duration(OffsetDateTime.now(), null));
         task.setName(faker.funnyName().name());
         task.setType(faker.app().name());
         taskContextHolder.registerContext(new TaskContextImpl(task, null, taskContextHolder, taskTransactionContextFactory));

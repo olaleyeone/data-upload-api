@@ -1,7 +1,7 @@
-package com.github.olaleyeone.dataupload.event.listeners;
+package com.github.olaleyeone.dataupload.messaging.producer;
 
 import com.github.olaleyeone.dataupload.data.entity.DataUpload;
-import com.github.olaleyeone.dataupload.event.mesage.UploadCompletedEvent;
+import com.github.olaleyeone.dataupload.messaging.event.UploadCompletedEvent;
 import com.github.olaleyeone.dataupload.repository.DataUploadRepository;
 import com.github.olaleyeone.dataupload.response.pojo.DataUploadApiResponse;
 import com.olaleyeone.audittrail.context.TaskContext;
@@ -22,13 +22,15 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import javax.inject.Provider;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 @RequiredArgsConstructor
 @Component
-public class UploadCompleteEventListener {
+public class CompletedUploadPublisher {
 
-    final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
@@ -54,31 +56,39 @@ public class UploadCompleteEventListener {
                 () -> send(dataUpload));
     }
 
-    private void send(DataUpload dataUpload) {
+    public Future<?> send(DataUpload dataUpload) {
+        CompletableFuture<Void> completableFuture = new CompletableFuture<>();
         sendMessage(dataUpload).addCallback(new ListenableFutureCallback<SendResult<String, Object>>() {
 
             @Override
             public void onFailure(Throwable ex) {
-                //noop
                 logger.error(ex.getMessage(), ex);
+                completableFuture.completeExceptionally(ex);
             }
 
             @Override
             public void onSuccess(SendResult<String, Object> result) {
                 logger.info("Upload of {} published", dataUpload.getId());
-                taskContextProvider.get().execute(
-                        "UPDATE PUBLISHED UPLOAD",
-                        String.format("Update published upload %d", dataUpload.getId()),
-                        () -> transactionTemplate.execute(status -> {
-                            dataUpload.setCompletionPublishedOn(LocalDateTime.now());
-                            dataUploadRepository.save(dataUpload);
-                            return null;
-                        }));
+                try {
+                    taskContextFactory.startBackgroundTask(
+                            "UPDATE PUBLISHED UPLOAD",
+                            String.format("Update published upload %d", dataUpload.getId()),
+                            () -> taskContextProvider.get().execute(
+                                    "UPDATE PUBLISHED UPLOAD",
+                                    String.format("Update published upload %d", dataUpload.getId()),
+                                    () -> transactionTemplate.execute(status -> {
+                                        dataUpload.setCompletionPublishedOn(OffsetDateTime.now());
+                                        return dataUploadRepository.save(dataUpload);
+                                    })));
+                } finally {
+                    completableFuture.complete(null);
+                }
             }
         });
+        return completableFuture;
     }
 
-    public ListenableFuture<SendResult<String, Object>> sendMessage(DataUpload msg) {
+    protected ListenableFuture<SendResult<String, Object>> sendMessage(DataUpload msg) {
         return kafkaTemplate.send(completedUploadTopic, msg.getId().toString(), new DataUploadApiResponse(msg));
     }
 }

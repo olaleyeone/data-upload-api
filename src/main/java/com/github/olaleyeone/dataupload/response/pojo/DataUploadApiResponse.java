@@ -4,6 +4,7 @@ import com.github.olaleyeone.dataupload.data.entity.DataUpload;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -23,6 +24,8 @@ public class DataUploadApiResponse {
     private List<MissingChunkApiResponse> missingChunks;
 
     private String userId;
+
+    private LocalDateTime completedOn;
 
     public DataUploadApiResponse(DataUpload dataUpload) {
         this.id = dataUpload.getId();

@@ -1,7 +1,7 @@
 package com.github.olaleyeone.dataupload.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.olaleyeone.dataupload.configuration.BeanValidationConfiguration;
+import com.github.olaleyeone.configuration.BeanValidationConfiguration;
 import com.github.olaleyeone.dataupload.data.entity.DataUpload;
 import com.github.olaleyeone.dataupload.repository.DataUploadChunkRepository;
 import com.github.olaleyeone.dataupload.response.pojo.DataUploadApiResponse;
@@ -81,9 +81,7 @@ public class UploadTest extends ServiceTest {
     }
 
     @Configuration
-    @Import({
-            BeanValidationConfiguration.class
-    })
+    @Import({BeanValidationConfiguration.class})
     static class $Config implements WebMvcConfigurer {
 
     }
