@@ -36,9 +36,29 @@ public interface DataUploadChunkRepository extends JpaRepository<DataUploadChunk
             ") ORDER BY c.start")
     List<DataChunk> getOpenChunks(DataUpload dataUpload);
 
+    @Query("SELECT new com.github.olaleyeone.dataupload.data.dto.DataChunk(c.id, c.start, c.size)" +
+            " FROM DataUploadChunk c" +
+            " WHERE c.dataUpload=?1" +
+            " AND (" +
+            " (c.start+c.size-1 >= ?2)" +
+            " OR" +
+            " (c.start-1 <= ?3)" +
+            ")" +
+            " ORDER BY c.start")
+    List<DataChunk> getChunks(DataUpload dataUpload, long start, long end);
+
+    @Query("SELECT new com.github.olaleyeone.dataupload.data.dto.DataChunk(c.id, c.start, c.size)" +
+            " FROM DataUploadChunk c" +
+            " WHERE c.dataUpload=?1" +
+            " ORDER BY c.start")
+    List<DataChunk> getChunks(DataUpload dataUpload);
+
     @Query("SELECT c.id FROM DataUploadChunk c WHERE c.dataUpload=?1 ORDER BY c.start")
     List<Long> getChunkIds(DataUpload dataUpload);
 
     @Query("SELECT MAX(c.createdOn) FROM DataUploadChunk c WHERE c.dataUpload=?1")
     LocalDateTime findLatestUploadTime(DataUpload dataUpload);
+
+    @Query(nativeQuery = true, value = "SELECT substr(data, ?2, ?3) FROM data_upload_chunk WHERE id = ?1")
+    byte[] getData(Long chunkId, int offset, int length);
 }

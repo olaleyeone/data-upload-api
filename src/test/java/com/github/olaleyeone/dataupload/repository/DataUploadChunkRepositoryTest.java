@@ -19,7 +19,7 @@ class DataUploadChunkRepositoryTest extends EntityTest {
     private DataUploadChunkRepository dataUploadChunkRepository;
 
     @Test
-    void searchChunkInRange() {
+    void countChunkInRange() {
         DataUploadChunk dataUploadChunk = modelFactory.create(DataUploadChunk.class);
         assertNotNull(dataUploadChunk);
         assertNotNull(dataUploadChunk.getId());
@@ -30,7 +30,7 @@ class DataUploadChunkRepositoryTest extends EntityTest {
     }
 
     @Test
-    void searchChunkAboveRange() {
+    void countChunkAboveRange() {
         DataUploadChunk dataUploadChunk = modelFactory.create(DataUploadChunk.class);
 
         int count = dataUploadChunkRepository.countByRange(dataUploadChunk.getDataUpload(),
@@ -39,7 +39,7 @@ class DataUploadChunkRepositoryTest extends EntityTest {
     }
 
     @Test
-    void searchChunkBelowRange() {
+    void countChunkBelowRange() {
         DataUploadChunk dataUploadChunk = modelFactory.create(DataUploadChunk.class);
 
         int count = dataUploadChunkRepository.countByRange(dataUploadChunk.getDataUpload(),
@@ -48,7 +48,7 @@ class DataUploadChunkRepositoryTest extends EntityTest {
     }
 
     @Test
-    void searchChunkWithOverlap() {
+    void countChunkWithOverlap() {
         DataUploadChunk dataUploadChunk = modelFactory.create(DataUploadChunk.class);
 
         int count = dataUploadChunkRepository.countByRange(dataUploadChunk.getDataUpload(),
@@ -57,12 +57,63 @@ class DataUploadChunkRepositoryTest extends EntityTest {
     }
 
     @Test
-    void searchChunkWithOverlap2() {
+    void countChunkWithOverlap2() {
         DataUploadChunk dataUploadChunk = modelFactory.create(DataUploadChunk.class);
 
         int count = dataUploadChunkRepository.countByRange(dataUploadChunk.getDataUpload(),
                 dataUploadChunk.getStart() + dataUploadChunk.getSize() - 1, 2);
         assertTrue(count > 0);
+    }
+
+    @Test
+    void getChunksInRange() {
+        DataUploadChunk dataUploadChunk = modelFactory.create(DataUploadChunk.class);
+        assertNotNull(dataUploadChunk);
+        assertNotNull(dataUploadChunk.getId());
+
+        long start = dataUploadChunk.getStart() - 1;
+        int size = dataUploadChunk.getSize();
+
+        long rangeStart = start + size / 4;
+        long rangeEnd = start + size / 2;
+
+        List<DataChunk> chunks = dataUploadChunkRepository.getChunks(dataUploadChunk.getDataUpload(),
+                rangeStart, rangeEnd);
+        assertEquals(1, chunks.size());
+    }
+
+    @Test
+    void getChunksInRangeWithFullMatch() {
+        DataUploadChunk dataUploadChunk = modelFactory.create(DataUploadChunk.class);
+        assertNotNull(dataUploadChunk);
+        assertNotNull(dataUploadChunk.getId());
+
+        long start = dataUploadChunk.getStart() - 1;
+        int size = dataUploadChunk.getSize();
+
+        long rangeStart = start;
+        long rangeEnd = start + size - 1;
+
+        List<DataChunk> chunks = dataUploadChunkRepository.getChunks(dataUploadChunk.getDataUpload(),
+                rangeStart, rangeEnd);
+        assertEquals(1, chunks.size());
+    }
+
+    @Test
+    void getChunksInEnvelopeRange() {
+        DataUploadChunk dataUploadChunk = modelFactory.create(DataUploadChunk.class);
+        assertNotNull(dataUploadChunk);
+        assertNotNull(dataUploadChunk.getId());
+
+        long start = dataUploadChunk.getStart() - 1;
+        int size = dataUploadChunk.getSize();
+
+        long rangeStart = start - 1;
+        long rangeEnd = start + size;
+
+        List<DataChunk> chunks = dataUploadChunkRepository.getChunks(dataUploadChunk.getDataUpload(),
+                rangeStart, rangeEnd);
+        assertEquals(1, chunks.size());
     }
 
     @Test
