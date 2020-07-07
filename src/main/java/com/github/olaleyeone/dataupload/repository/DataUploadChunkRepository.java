@@ -59,6 +59,6 @@ public interface DataUploadChunkRepository extends JpaRepository<DataUploadChunk
     @Query("SELECT MAX(c.createdOn) FROM DataUploadChunk c WHERE c.dataUpload=?1")
     LocalDateTime findLatestUploadTime(DataUpload dataUpload);
 
-    @Query(nativeQuery = true, value = "SELECT substr(data, ?2, ?3) FROM data_upload_chunk WHERE id = ?1")
+    @Query(nativeQuery = true, value = "SELECT substr(data, ?2+1, ?3) FROM data_upload_chunk WHERE id = ?1")
     byte[] getData(Long chunkId, int offset, int length);
 }
