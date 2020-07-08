@@ -86,4 +86,20 @@ class DataDownloadControllerTest extends ControllerTest {
                 .andExpect(status().isOk());
         Mockito.verify(rangeResponseHandler, Mockito.times(1)).sendRange(dataUpload, ranges);
     }
+
+    @Test
+    public void getDataForInfiniteRange() throws Exception {
+        dataUpload.setSize(faker.number().randomNumber());
+        Mockito.doReturn(Optional.of(dataUpload)).when(dataUploadRepository).findById(Mockito.any());
+        Mockito.doReturn(dataUpload.getSize()).when(dataUploadChunkRepository).sumData(Mockito.any());
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        List<HttpRange> ranges = Collections.singletonList(HttpRange.createByteRange(0));
+        httpHeaders.setRange(ranges);
+        mockMvc.perform(MockMvcRequestBuilders.get("/uploads/{id}/data", faker.number().randomDigit())
+                .headers(httpHeaders))
+                .andExpect(status().isOk());
+        Mockito.verify(fullDataResponseHandler, Mockito.times(1)).sendAll(Mockito.eq(dataUpload), Mockito.any());
+        Mockito.verify(rangeResponseHandler, Mockito.never()).sendRange(Mockito.any(), Mockito.any());
+    }
 }

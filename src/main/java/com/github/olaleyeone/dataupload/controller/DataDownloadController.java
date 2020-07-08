@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpRange;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -45,9 +47,20 @@ public class DataDownloadController {
     @GetMapping(path = "/uploads/{id:\\d+}/data", headers = "Range")
     public ResponseEntity<?> getDataRange(
             @PathVariable("id") Long dataUploadId,
+            HttpServletResponse httpServletResponse,
             @RequestHeader HttpHeaders httpHeaders) throws IOException {
         DataUpload dataUpload = getDataUpload(dataUploadId);
-        return rangeResponseHandler.sendRange(dataUpload, httpHeaders.getRange());
+        List<HttpRange> ranges = httpHeaders.getRange();
+        HttpRange range = ranges.iterator().next();
+        if (rangeEqualsAll(range)) {
+            fullDataResponseHandler.sendAll(dataUpload, httpServletResponse);
+            return null;
+        }
+        return rangeResponseHandler.sendRange(dataUpload, ranges);
+    }
+
+    private boolean rangeEqualsAll(HttpRange range) {
+        return range.getRangeStart(Long.MAX_VALUE) == 0 && range.getRangeEnd(Long.MAX_VALUE) >= Long.MAX_VALUE - 1;
     }
 
     private DataUpload getDataUpload(@PathVariable("id") Long dataUploadId) {
