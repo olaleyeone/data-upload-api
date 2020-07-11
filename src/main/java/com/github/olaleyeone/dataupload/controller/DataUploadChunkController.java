@@ -9,6 +9,7 @@ import com.github.olaleyeone.dataupload.repository.DataUploadRepository;
 import com.github.olaleyeone.dataupload.response.handler.DataUploadApiResponseHandler;
 import com.github.olaleyeone.dataupload.response.pojo.DataUploadApiResponse;
 import com.github.olaleyeone.dataupload.service.api.DataUploadChunkService;
+import com.github.olaleyeone.rest.ApiResponse;
 import com.github.olaleyeone.rest.exception.ErrorResponse;
 import com.github.olaleyeone.rest.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -41,29 +42,33 @@ public class DataUploadChunkController {
             @RequestParam(value = "totalSize", required = false) Long totalSize,
             HttpServletRequest request) throws IOException {
         if (start == 0) {
-            throw new ErrorResponse(HttpStatus.BAD_REQUEST, "Start must be 1 or more");
+            throw new ErrorResponse(HttpStatus.BAD_REQUEST, getMessageResponse("Start must be 1 or more"));
         }
         DataUpload dataUpload = getDataUpload(dataUploadId, request);
         DataUploadChunkApiRequest apiRequest = getDataUploadChunkApiRequest(start, request, dataUpload);
 
         Long totalUploadSize = dataUpload.getSize();
         if (totalUploadSize == null) {
-            if (totalSize == null || totalSize < 1) {
-                throw new ErrorResponse(HttpStatus.BAD_REQUEST, "Valid total size required");
+            if (totalSize == null) {
+                totalSize = Long.valueOf(request.getContentLength());
+            }
+            if (totalSize < 1) {
+                throw new ErrorResponse(HttpStatus.BAD_REQUEST, getMessageResponse("Valid total size required"));
             }
             apiRequest.setTotalSize(totalUploadSize = totalSize);
         }
 
         if (totalUploadSize == null || totalUploadSize < (apiRequest.getStart() + apiRequest.getData().length) - 1) {
-            throw new ErrorResponse(HttpStatus.BAD_REQUEST, String.format("Cannot write beyond expected upload size %d",
-                    totalUploadSize));
+            throw new ErrorResponse(HttpStatus.BAD_REQUEST, getMessageResponse(String.format("Cannot write beyond expected upload size %d",
+                    totalUploadSize)));
         }
 
         DataUploadChunk chunk = dataUploadChunkService.createChunk(dataUpload, apiRequest);
         if (countChunkInRange(dataUpload, apiRequest) > 1) {
             dataUploadChunkService.delete(chunk);
-            throw new ErrorResponse(HttpStatus.BAD_REQUEST, "Data already in range");
+            throw new ErrorResponse(HttpStatus.BAD_REQUEST, getMessageResponse("Data already in range"));
         }
+
         DataUploadApiResponse dataUploadApiResponse = dataUploadApiResponseHandler.getDataUploadApiResponse(dataUpload);
         if (dataUpload.getSize().equals(dataUploadApiResponse.getSizeUploaded())) {
             applicationContext.publishEvent(new UploadCompletedEvent(dataUpload));
@@ -75,8 +80,8 @@ public class DataUploadChunkController {
         DataUpload dataUpload = dataUploadRepository.findById(dataUploadId)
                 .orElseThrow(NotFoundException::new);
         if (StringUtils.isNotBlank(dataUpload.getContentType()) && !dataUpload.getContentType().equals(request.getContentType())) {
-            throw new ErrorResponse(HttpStatus.BAD_REQUEST, String.format("Expected content of type %s but received %s",
-                    dataUpload.getContentType(), request.getContentType()));
+            throw new ErrorResponse(HttpStatus.BAD_REQUEST, getMessageResponse(String.format("Expected content of type %s but received %s",
+                    dataUpload.getContentType(), request.getContentType())));
         }
         return dataUpload;
     }
@@ -87,9 +92,17 @@ public class DataUploadChunkController {
         apiRequest.setContentType(request.getContentType());
         apiRequest.setData(StreamUtils.copyToByteArray(request.getInputStream()));
         if (countChunkInRange(dataUpload, apiRequest) > 0) {
-            throw new ErrorResponse(HttpStatus.BAD_REQUEST, "Data already in range");
+            throw new ErrorResponse(HttpStatus.BAD_REQUEST, getMessageResponse("Data already in range"));
         }
         return apiRequest;
+    }
+
+    private ApiResponse<Object> getMessageResponse(String s) {
+        return new ApiResponse<>(
+                null,
+                s,
+                null
+        );
     }
 
     private int countChunkInRange(DataUpload dataUpload, DataUploadChunkApiRequest apiRequest) {

@@ -56,6 +56,19 @@ class DataUploadChunkControllerTest extends ControllerTest {
     }
 
     @Test
+    void uploadChunkWithInvalidTotal() throws Exception {
+
+        Mockito.doReturn(Optional.of(dataUpload)).when(dataUploadRepository).findById(Mockito.any());
+        String data = faker.beer().malt();
+        dataUpload.setSize(Long.valueOf(data.getBytes().length / 2));
+        mockMvc.perform(MockMvcRequestBuilders.post("/uploads/{id}/data/{start}", dataUpload.getId(), 1)
+                .param("totalSize", "-1")
+                .with(body(data)))
+                .andExpect(status().isBadRequest());
+        Mockito.verify(dataUploadChunkService, Mockito.never()).createChunk(Mockito.eq(dataUpload), Mockito.any());
+    }
+
+    @Test
     void uploadChunkWithExcessData() throws Exception {
 
         Mockito.doReturn(Optional.of(dataUpload)).when(dataUploadRepository).findById(Mockito.any());
@@ -79,7 +92,7 @@ class DataUploadChunkControllerTest extends ControllerTest {
 
         String data = faker.beer().malt();
         mockMvc.perform(MockMvcRequestBuilders.post("/uploads/{id}/data/{start}", dataUpload.getId(), 1)
-                .param("totalSize", String.valueOf(data.getBytes().length))
+//                .param("totalSize", String.valueOf(data.getBytes().length))
                 .content(data))
                 .andExpect(status().isOk())
                 .andExpect(result -> {

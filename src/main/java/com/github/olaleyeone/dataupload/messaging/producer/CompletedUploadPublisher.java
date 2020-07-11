@@ -2,6 +2,7 @@ package com.github.olaleyeone.dataupload.messaging.producer;
 
 import com.github.olaleyeone.dataupload.data.entity.DataUpload;
 import com.github.olaleyeone.dataupload.messaging.event.UploadCompletedEvent;
+import com.github.olaleyeone.dataupload.repository.DataUploadChunkRepository;
 import com.github.olaleyeone.dataupload.repository.DataUploadRepository;
 import com.github.olaleyeone.dataupload.response.pojo.DataUploadApiResponse;
 import com.olaleyeone.audittrail.context.TaskContext;
@@ -36,6 +37,7 @@ public class CompletedUploadPublisher {
 
     private final TransactionTemplate transactionTemplate;
     private final DataUploadRepository dataUploadRepository;
+    private final DataUploadChunkRepository dataUploadChunkRepository;
 
     private final Provider<TaskContext> taskContextProvider;
     private final TaskContextFactory taskContextFactory;
@@ -57,6 +59,7 @@ public class CompletedUploadPublisher {
     }
 
     public Future<?> send(DataUpload dataUpload) {
+        dataUpload.setCompletedOn(dataUploadChunkRepository.findLatestUploadTime(dataUpload));
         CompletableFuture<Void> completableFuture = new CompletableFuture<>();
         sendMessage(dataUpload).addCallback(new ListenableFutureCallback<SendResult<String, Object>>() {
 

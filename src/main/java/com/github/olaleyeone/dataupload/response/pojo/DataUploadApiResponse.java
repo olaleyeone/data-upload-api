@@ -4,7 +4,7 @@ import com.github.olaleyeone.dataupload.data.entity.DataUpload;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Data
@@ -25,7 +25,7 @@ public class DataUploadApiResponse {
 
     private String userId;
 
-    private LocalDateTime completedOn;
+    private OffsetDateTime completedOn;
 
     public DataUploadApiResponse(DataUpload dataUpload) {
         this.id = dataUpload.getId();
@@ -33,5 +33,6 @@ public class DataUploadApiResponse {
         this.size = dataUpload.getSize();
         this.description = dataUpload.getDescription();
         this.userId = dataUpload.getUserId();
+        this.completedOn = dataUpload.getCompletedOn();
     }
 }

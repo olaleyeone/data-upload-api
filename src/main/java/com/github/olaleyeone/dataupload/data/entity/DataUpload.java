@@ -26,6 +26,7 @@ public class DataUpload {
     )
     private OffsetDateTime createdOn;
 
+    private OffsetDateTime completedOn;
     private OffsetDateTime completionPublishedOn;
 
     @Column(updatable = false)

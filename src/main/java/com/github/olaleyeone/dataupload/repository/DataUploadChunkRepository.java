@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,7 +58,7 @@ public interface DataUploadChunkRepository extends JpaRepository<DataUploadChunk
     List<Long> getChunkIds(DataUpload dataUpload);
 
     @Query("SELECT MAX(c.createdOn) FROM DataUploadChunk c WHERE c.dataUpload=?1")
-    LocalDateTime findLatestUploadTime(DataUpload dataUpload);
+    OffsetDateTime findLatestUploadTime(DataUpload dataUpload);
 
     @Query(nativeQuery = true, value = "SELECT substr(data, ?2+1, ?3) FROM data_upload_chunk WHERE id = ?1")
     byte[] getData(Long chunkId, int offset, int length);
