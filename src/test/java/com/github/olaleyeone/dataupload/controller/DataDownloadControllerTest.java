@@ -49,7 +49,7 @@ class DataDownloadControllerTest extends ControllerTest {
 
     @Test
     public void getDataForIncompleteUpload() throws Exception {
-        dataUpload.setSize(faker.number().randomNumber());
+        dataUpload.setSize(faker.number().randomDigit() + 10L);
         Mockito.doReturn(Optional.of(dataUpload)).when(dataUploadRepository).findById(Mockito.any());
         Mockito.doReturn(dataUpload.getSize() / 2).when(dataUploadChunkRepository).sumData(Mockito.any());
         long id = faker.number().randomDigit();
