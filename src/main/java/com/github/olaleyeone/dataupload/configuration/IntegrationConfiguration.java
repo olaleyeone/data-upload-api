@@ -20,7 +20,6 @@ import static com.github.olaleyeone.configuration.JacksonConfiguration.DEFAULT_D
         "com.github.olaleyeone.dataupload.messaging"
 })
 @Import({
-        KafkaTopicConfig.class,
         KafkaProducerConfig.class
 })
 public class IntegrationConfiguration {
