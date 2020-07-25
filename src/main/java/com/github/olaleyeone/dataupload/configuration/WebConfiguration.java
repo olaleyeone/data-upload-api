@@ -1,6 +1,7 @@
 package com.github.olaleyeone.dataupload.configuration;
 
 import com.github.olaleyeone.advice.ErrorAdvice;
+import com.github.olaleyeone.auth.data.AuthorizedRequest;
 import com.github.olaleyeone.auth.interceptors.AccessConstraintHandlerInterceptor;
 import com.github.olaleyeone.configuration.BeanValidationConfiguration;
 import com.github.olaleyeone.configuration.JacksonConfiguration;
@@ -19,6 +20,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.inject.Provider;
 import java.util.Arrays;
 
 @Configuration
@@ -39,6 +41,9 @@ public class WebConfiguration implements WebMvcConfigurer {
     @Autowired
     private ApplicationContext applicationContext;
 
+    @Autowired
+    private Provider<AuthorizedRequest> authorizedRequestProvider;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         AutowireCapableBeanFactory beanFactory = applicationContext.getAutowireCapableBeanFactory();
@@ -46,6 +51,7 @@ public class WebConfiguration implements WebMvcConfigurer {
 
         AccessConstraintHandlerInterceptor accessConstraintHandlerInterceptor = new AccessConstraintHandlerInterceptor(
                 applicationContext,
+                authorizedRequestProvider,
                 Arrays.asList(BasicErrorController.class,
                         OpenApiResource.class,
                         SwaggerWelcome.class)
